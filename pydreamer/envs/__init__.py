@@ -2,6 +2,7 @@
 import warnings
 warnings.filterwarnings("ignore", ".*Box bound precision lowered by casting")  # gym
 
+import retro
 import gym
 import numpy as np
 
@@ -13,6 +14,11 @@ def create_env(env_id: str, no_terminal: bool, env_time_limit: int, env_action_r
     if env_id.startswith('MiniGrid-'):
         from .minigrid import MiniGrid
         env = MiniGrid(env_id)
+
+    elif env_id.startswith('Streetfighter-'):
+        #from .streetfighter import Streetfighter
+        #env = Streetfighter()
+        env = retro.make(game="StreetFighterIISpecialChampionEdition-Genesis")
 
     elif env_id.startswith('Atari-'):
         from .atari import Atari
