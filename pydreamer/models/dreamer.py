@@ -212,6 +212,10 @@ class WorldModel(nn.Module):
         self.kl_weight = conf.kl_weight
         self.kl_balance = None if conf.kl_balance == 0.5 else conf.kl_balance
 
+        # Gekke CNN shizzle
+
+        self.CNN =
+
         # Encoder
 
         self.encoder = MultiEncoder(conf)
@@ -258,9 +262,12 @@ class WorldModel(nn.Module):
                       forward_only=False
                       ):
 
+        # Gekke CNN f(x-1, x-2, x-3) shizzle
+        p = iets
+
         # Encoder
 
-        embed = self.encoder(obs)
+        embed = self.encoder(obs, p)
 
         # RSSM
 
@@ -277,7 +284,7 @@ class WorldModel(nn.Module):
 
         # Decoder
 
-        loss_reconstr, metrics, tensors = self.decoder.training_step(features, obs)
+        loss_reconstr, metrics, tensors = self.decoder.training_step(features, obs, p)
 
         # KL loss
 
