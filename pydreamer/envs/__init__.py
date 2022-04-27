@@ -2,7 +2,6 @@
 import warnings
 warnings.filterwarnings("ignore", ".*Box bound precision lowered by casting")  # gym
 
-import retro
 import gym
 import numpy as np
 

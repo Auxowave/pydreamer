@@ -49,6 +49,9 @@ class MultiEncoder(nn.Module):
         if self.encoder_image:
             image = obs['image']
             T, B, C, H, W = image.shape
+
+            # B batches, C channels, H height, W width, T??
+
             if self.reward_input:
                 reward = obs['reward']
                 terminal = obs['terminal']

@@ -17,7 +17,7 @@ from .probes import *
 from .distraction import *
 
 
-class Dreamer(nn.Module):
+class Dreamerdiff(nn.Module):
 
     def __init__(self, conf):
         super().__init__()
@@ -215,11 +215,7 @@ class WorldModel(nn.Module):
 
         # Distraction network
 
-        #self.distraction = DistractionEncoder()
-        #print("WO DIH HIJ KOMT HIER GEWOON")
-        #print(conf)
-        #qwer()
-        #self.distraction = DiffEncoder()
+        #self.distraction =
 
         # Encoder
 
@@ -268,12 +264,6 @@ class WorldModel(nn.Module):
                       ):
 
         # Distraction network
-        print("CHECKPOINT")
-        print(obs.keys())
-        print("-----------------------------------")
-        print(obs['image'].shape)
-        makeerror()
-
         p = self.distraction()
 
         # Encoder
