@@ -92,8 +92,8 @@ class ConvEncoder(nn.Module):
             nn.Flatten()
         )
 
-    def forward(self, x, p):
-        x, bd = flatten_batch(x - p, 3)
+    def forward(self, x):
+        x, bd = flatten_batch(x, 3)
         y = self.model(x)
         y = unflatten_batch(y, bd)
         return y

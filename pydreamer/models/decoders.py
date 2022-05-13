@@ -146,10 +146,10 @@ class ConvDecoder(nn.Module):
             activation(),
             nn.ConvTranspose2d(d, out_channels, kernels[3], stride))
 
-    def forward(self, x: Tensor, p: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         x, bd = flatten_batch(x)
         y = self.model(x)
-        y = unflatten_batch(y, bd) + p
+        y = unflatten_batch(y, bd)
         return y
 
     def loss(self, output: Tensor, target: Tensor) -> Tensor:
@@ -158,12 +158,12 @@ class ConvDecoder(nn.Module):
         loss = 0.5 * torch.square(output - target).sum(dim=[-1, -2, -3])  # MSE
         return unflatten_batch(loss, bd)
 
-    def training_step(self, features: TensorTBIF, target: TensorTBCHW, p) -> Tuple[TensorTBI, TensorTB, TensorTBCHW]:
+    def training_step(self, features: TensorTBIF, target: TensorTBCHW) -> Tuple[TensorTBI, TensorTB, TensorTBCHW]:
         assert len(features.shape) == 4 and len(target.shape) == 5
         I = features.shape[2]
         target = insert_dim(target, 2, I)  # Expand target with iwae_samples dim, because features have it
 
-        decoded = self.forward(features, p)
+        decoded = self.forward(features)
         loss_tbi = self.loss(decoded, target)
         loss_tb = -logavgexp(-loss_tbi, dim=2)  # TBI => TB
         decoded = decoded.mean(dim=2)  # TBICHW => TBCHW

@@ -272,13 +272,30 @@ class WorldModel(nn.Module):
         print(obs.keys())
         print("-----------------------------------")
         print(obs['image'].shape)
+        qwer = obs['image']
+        counter = 0
+        for qwerqwer in qwer:
+            for image in qwerqwer:
+                counter += 1
+        print(counter)
+        qwer = obs['image'].cpu()
+        qwer = qwer.numpy()
+
+        import pickle
+        with open("images.txt", "wb") as f:
+            pickle.dump(qwer, f)
+
+        print(qwer)
+        print(qwer.shape)
+        print(qwer.dtype)
+
         makeerror()
 
-        p = self.distraction()
+        #p = self.distraction()
 
         # Encoder
 
-        embed = self.encoder(obs, p)
+        embed = self.encoder(obs)
 
         # RSSM
 
@@ -295,8 +312,12 @@ class WorldModel(nn.Module):
 
         # Decoder
 
-        loss_reconstr, metrics, tensors = self.decoder.training_step(features, obs, p)
-
+        loss_reconstr, metrics, tensors = self.decoder.training_step(features, obs)
+        print("CHECKPOINT")
+        print(tensors.keys())
+        print("-----------------------------------")
+        print(tensors['image_rec'].shape)
+        makeerror()
         # KL loss
 
         d = self.core.zdistr
