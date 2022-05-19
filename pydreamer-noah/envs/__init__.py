@@ -14,6 +14,11 @@ def create_env(env_id: str, no_terminal: bool, env_time_limit: int, env_action_r
         from .minigrid import MiniGrid
         env = MiniGrid(env_id)
 
+    elif env_id.startswith('Streetfighter-'):
+        #from .streetfighter import Streetfighter
+        #env = Streetfighter()
+        env = retro.make(game="StreetFighterIISpecialChampionEdition-Genesis")
+
     elif env_id.startswith('Atari-'):
         from .atari import Atari
         env = Atari(env_id.split('-')[1].lower(), action_repeat=env_action_repeat)

@@ -14,7 +14,7 @@ from .decoders import *
 from .rnn import *
 from .rssm import *
 from .probes import *
-from .NewCNN import *
+from .distraction import *
 
 
 class Dreamer(nn.Module):
@@ -213,6 +213,13 @@ class WorldModel(nn.Module):
         self.kl_weight = conf.kl_weight
         self.kl_balance = None if conf.kl_balance == 0.5 else conf.kl_balance
 
+        # Distraction network
+
+        #self.distraction = DistractionEncoder()
+        #print("WO DIH HIJ KOMT HIER GEWOON")
+        #print(conf)
+        #qwer()
+        #self.distraction = DiffEncoder()
 
         # Encoder
 
@@ -222,9 +229,6 @@ class WorldModel(nn.Module):
 
         features_dim = conf.deter_dim + conf.stoch_dim * (conf.stoch_discrete or 1)
         self.decoder = MultiDecoder(features_dim, conf)
-
-        
-        self.newcnn = NewCNN(in_channels=conf.image_channels, cnn_depth=conf.cnn_depth)
 
         # RSSM
 
@@ -241,9 +245,7 @@ class WorldModel(nn.Module):
         # Init
 
         for m in self.modules():
-            print(m)
             init_weights_tf2(m)
-        
 
     def init_state(self, batch_size: int) -> Tuple[Any, Any]:
         return self.core.init_state(batch_size)
@@ -265,19 +267,13 @@ class WorldModel(nn.Module):
                       forward_only=False
                       ):
 
-        # print(self.newcnn.parameters())
-        # print(sum(p.numel() for p in self.newcnn.parameters()))
-        # print(sum(p.numel() for p in self.newcnn.parameters() if p.requires_grad))
-        # print(' ------------------------')
-        # print(self.encoder.parameters())
-        # print(sum(p.numel() for p in self.encoder.parameters()))
-        # print(sum(p.numel() for p in self.encoder.parameters() if p.requires_grad))
+        # Distraction network
 
-        new_output = self.newcnn(obs['image'])
+        #p = self.distraction()
 
         # Encoder
 
-        embed = self.encoder(obs, new_output)
+        embed = self.encoder(obs)
 
         # RSSM
 
@@ -293,8 +289,7 @@ class WorldModel(nn.Module):
             return torch.tensor(0.0), features, states, out_state, {}, {}
 
         # Decoder
-
-        loss_reconstr, metrics, tensors = self.decoder.training_step(features, obs, new_output)
+        loss_reconstr, metrics, tensors = self.decoder.training_step(features, obs)
 
         # KL loss
 

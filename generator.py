@@ -19,7 +19,6 @@ import torch.distributions as D
 from pydreamer.data import MlflowEpisodeRepository
 from pydreamer.envs import create_env
 from pydreamer.models import *
-from pydreamer.models.dreamerdiff import Dreamerdiff
 from pydreamer.models.functions import map_structure
 from pydreamer.preprocessing import Preprocessor
 from pydreamer.tools import *
@@ -78,7 +77,7 @@ def main(env_id='MiniGrid-MazeS11N-v0',
     if policy == 'network':
         conf = model_conf
         if conf.model == 'dreamer':
-            model = Dreamerdiff(conf)
+            model = Dreamer(conf)
         else:
             assert False, conf.model
         preprocess = Preprocessor(image_categorical=conf.image_channels if conf.image_categorical else None,
@@ -265,7 +264,7 @@ class RandomPolicy:
 
 
 class NetworkPolicy:
-    def __init__(self, model: Dreamerdiff, preprocess: Preprocessor):
+    def __init__(self, model: Dreamer, preprocess: Preprocessor):
         self.model = model
         self.preprocess = preprocess
         self.state = model.init_state(1)
