@@ -8,6 +8,7 @@ import torch.distributions as D
 # matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from actnorm import ActNorm2d
+import pickle
 
 from .functions import *
 from .common import *
@@ -20,35 +21,43 @@ class NewCNN(nn.Module):
         d = cnn_depth
 
         self.model = nn.Sequential(
-            nn.Conv2d(9, 6, kernel_size=3, stride=1, padding=1, bias=False),
-            ActNorm2d(6),
+            nn.Conv2d(9, d, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(d),
             activation(),
-            nn.Conv2d(6, 6, kernel_size=3, stride=1, padding=1, bias=False),
-            ActNorm2d(6),
-            activation(),
-            nn.Conv2d(6, 6, kernel_size=3, stride=1, padding=1, bias=False),
-            ActNorm2d(6),
-            activation(),
-            nn.Conv2d(6, 3, kernel_size=3, stride=1, padding=1, bias=False),
-            ActNorm2d(3),
-            activation(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Upsample(scale_factor=2, mode='nearest'),
-            ActNorm2d(3),
+            nn.Conv2d(d, 3, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(3),
             activation()
         )
+
+        self.gif = nn.Parameter(self.load_gif())
 
         self.x_0 = None
         self.x_1 = None
         self.x_2 = None
         self.x_3 = None
         self.iter = 0
-        self.picture_every = 5000
+        self.picture_every = 5040
+
+    @staticmethod
+    def load_gif():
+        with open("images.txt", "rb") as f:
+            images = pickle.load(f)
+        tensors = []
+        for image in images:
+            tensor = torch.tensor(image)
+            tensors.append(tensor)
+        b = torch.Tensor(60, 3, 64, 64)
+        torch.cat(tensors, out=b)
+        return b
 
     def forward(self, x: Tensor) -> Tensor:
         if self.x_0 is not None and self.x_0.size() != x.size():
             print("reset history")
             self.x_0 = None
+
+        gif_image = self.gif[self.iter % 60]
+
+        x = x + gif_image
 
         if self.x_0 is None:
             self.x_0 = x
@@ -65,6 +74,8 @@ class NewCNN(nn.Module):
         combined_history, bd = flatten_batch(combined_history, 3)
         y = self.model(combined_history)
         y = unflatten_batch(y, bd)
+
+
 
         self.iter += 1
         if self.iter == self.picture_every:
@@ -92,3 +103,4 @@ class NewCNN(nn.Module):
         
 
         return y
+

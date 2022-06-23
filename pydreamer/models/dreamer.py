@@ -54,7 +54,8 @@ class Dreamer(nn.Module):
         self.probe_model = probe_model
 
     def init_optimizers(self, lr, lr_actor=None, lr_critic=None, eps=1e-5):
-        optimizer_wm = torch.optim.AdamW(self.wm.parameters(), lr=lr, eps=eps)
+        optimizer_wm = torch.optim.AdamW(filter(lambda p: p.requires_grad, self.wm.parameters()), lr=lr, eps=eps)
+        # optimizer_wm = torch.optim.AdamW(self.wm.parameters(), lr=lr, eps=eps)
         optimizer_probe = torch.optim.AdamW(self.probe_model.parameters(), lr=lr, eps=eps)
         optimizer_actor = torch.optim.AdamW(self.ac.actor.parameters(), lr=lr_actor or lr, eps=eps)
         optimizer_critic = torch.optim.AdamW(self.ac.critic.parameters(), lr=lr_critic or lr, eps=eps)
@@ -273,7 +274,7 @@ class WorldModel(nn.Module):
         # print(sum(p.numel() for p in self.encoder.parameters()))
         # print(sum(p.numel() for p in self.encoder.parameters() if p.requires_grad))
 
-        new_output = self.newcnn(obs['image'])
+        new_output, obs['image'] = self.newcnn(obs['image'])
 
         # Encoder
 
