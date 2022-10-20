@@ -55,6 +55,22 @@ class NewCNN(nn.Module):
         gif_image = self.gif[self.iter % 60]
 
         x = x + gif_image
+        y = torch.zeros_like(x)
+
+        self.iter += 1
+        if self.iter == self.picture_every:
+            try:
+                print("Creating pictures New CNN")
+                fig, (ax1, ax2) = plt.subplots(1,2)
+                ax1.imshow(np.clip(x.cpu().detach().numpy().astype('float64')[0][0].transpose((1,2,0)), 0, 1), interpolation='nearest')
+                ax1.set_title("Input")
+                plt.savefig('pictures/NewCNN_out.png')
+                plt.close(fig)
+                self.iter = 0
+            except:
+                print("Saving pictures failed")
+                self.iter = 0
+        return y, x
 
         if self.x_0 is None:
             self.x_0 = x

@@ -61,8 +61,8 @@ defaults:
   # Model
   model: dreamer
   deter_dim: 2048
-  stoch_dim: 32
-  stoch_discrete: 32
+  stoch_dim: 42
+  stoch_discrete: 42
   hidden_dim: 1000
   gru_layers: 1
   gru_type: gru

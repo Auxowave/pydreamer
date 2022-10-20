@@ -59,12 +59,14 @@ class NewCNN(nn.Module):
             self.x_0 = x
             self.x_1 = x
             self.x_2 = x
+            self.x_3 = x
         else:
+            self.x_3 = self.x_2
             self.x_2 = self.x_1
             self.x_1 = self.x_0
             self.x_0 = x
 
-        combined_history = torch.cat((self.x_0, self.x_1, self.x_2), -3)
+        combined_history = torch.cat((self.x_1, self.x_2, self.x_3), -3)
         combined_history, bd = flatten_batch(combined_history, 3)
         y = self.model(combined_history)
         y = unflatten_batch(y, bd)
